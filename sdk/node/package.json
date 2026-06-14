@@ -1,0 +1,33 @@
+{
+  "name": "svitch",
+  "version": "0.1.0",
+  "description": "AI data security layer — detect and redact Indian and global PII from LLM prompts.",
+  "keywords": ["pii", "dpdp", "llm", "security", "india", "compliance", "aadhaar", "pan", "upi"],
+  "license": "Apache-2.0",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "files": ["dist"],
+  "scripts": {
+    "build": "tsc",
+    "test": "node --experimental-vm-modules node_modules/.bin/jest"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.0",
+    "@types/node": "^20.0.0"
+  },
+  "peerDependencies": {
+    "openai": ">=4.0.0",
+    "anthropic": ">=0.25.0"
+  },
+  "peerDependenciesMeta": {
+    "openai": { "optional": true },
+    "anthropic": { "optional": true }
+  }
+}
