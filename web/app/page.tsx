@@ -323,20 +323,24 @@ export default function Home() {
             One line of code. Five layers of <span style={{ color: ACCENT }}>protection.</span>
           </h2>
           <div className="r-grid-3">
-            {["[01]","[02]","[03]"].map((n) => <div key={n} style={{ fontFamily: MONO, fontSize: 13, color: "#71716B" }}>{n}</div>)}
+            {[
+              { num: "[01]", title: "Wrap",   desc: <p style={{ fontSize: 15, lineHeight: 1.6, color: "#71716B", margin: 0 }}>Wrap any client — <span style={{ fontFamily: CODE_FONT, fontSize: 13, color: "#0D0D0B" }}>svitch.wrap(openai.client)</span>. Context and tools carry across every model.</p> },
+              { num: "[02]", title: "Shield", desc: <p style={{ fontSize: 15, lineHeight: 1.6, color: "#71716B", margin: 0 }}>PII is detected and redacted before the prompt ever leaves your codebase. Eleven Indian entity types, on by default.</p> },
+              { num: "[03]", title: "Route",  desc: <p style={{ fontSize: 15, lineHeight: 1.6, color: "#71716B", margin: 0 }}>Each query is complexity-scored. Routine work is auto-routed to a cheaper model — up to 80% off.</p> },
+            ].map(({ num, title, desc }) => (
+              <div key={num} className="r-process-step">
+                <div style={{ fontFamily: MONO, fontSize: 13, color: "#71716B", marginBottom: 10 }}>{num}</div>
+                <div style={{ fontSize: 18, fontWeight: 700, letterSpacing: "-0.02em", marginBottom: 18 }}>{title}</div>
+                {desc}
+              </div>
+            ))}
           </div>
-          <div className="r-grid-3" style={{ marginTop: 10 }}>
-            {["Wrap","Shield","Route"].map((v) => <div key={v} style={{ fontSize: 18, fontWeight: 700, letterSpacing: "-0.02em" }}>{v}</div>)}
-          </div>
-          <div style={{ position: "relative", margin: "22px 0 18px", height: 1, background: "#D0D0CC" }}>
+
+          {/* Connecting trace — desktop only */}
+          <div className="r-process-line" style={{ position: "relative", margin: "0 0 0", height: 1, background: "#D0D0CC" }}>
             {[16.66, 50, 83.33].map((pct) => (
               <span key={pct} style={{ position: "absolute", left: `calc(${pct}% - 3px)`, top: -2.5, width: 6, height: 6, borderRadius: "50%", background: ACCENT, display: "inline-block" }} />
             ))}
-          </div>
-          <div className="r-grid-3">
-            <p style={{ fontSize: 15, lineHeight: 1.6, color: "#71716B", margin: 0 }}>Wrap any client — <span style={{ fontFamily: CODE_FONT, fontSize: 13, color: "#0D0D0B" }}>svitch.wrap(openai.client)</span>. Context and tools carry across every model.</p>
-            <p style={{ fontSize: 15, lineHeight: 1.6, color: "#71716B", margin: 0 }}>PII is detected and redacted before the prompt ever leaves your codebase. Eleven Indian entity types, on by default.</p>
-            <p style={{ fontSize: 15, lineHeight: 1.6, color: "#71716B", margin: 0 }}>Each query is complexity-scored. Routine work is auto-routed to a cheaper model — up to 80% off.</p>
           </div>
         </div>
       </section>

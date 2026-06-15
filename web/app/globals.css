@@ -85,5 +85,8 @@ a { text-decoration: none; color: inherit; }
   .r-h2-demo     { font-size: 24px; }
   .r-h2-code     { font-size: 26px; margin: 0 0 16px; }
   .r-stat-num    { font-size: 40px; }
-  .r-logo-list   { gap: 24px; justify-content: flex-start; }
+  .r-logo-list      { gap: 24px; justify-content: flex-start; }
+  .r-process-line   { display: none; }
+  .r-process-step   { padding-bottom: 28px; border-bottom: 1px solid #E8E8E4; }
+  .r-process-step:last-child { border-bottom: none; padding-bottom: 0; }
 }
