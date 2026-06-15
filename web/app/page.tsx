@@ -251,14 +251,28 @@ export default function Home() {
       {/* ── NAV ── */}
       <nav style={{ position: "sticky", top: 0, zIndex: 50, background: "rgba(250,250,248,0.88)", backdropFilter: "saturate(180%) blur(8px)", borderBottom: "1px solid #E8E8E4" }}>
         <div className="r-nav-inner">
-          <a href="#" style={{ fontFamily: DISPLAY, fontSize: 20, fontWeight: 700, letterSpacing: "-0.03em", color: "#0D0D0B" }}>Svitch</a>
+          {/* Logo mark + wordmark */}
+          <a href="#" style={{ display: "flex", alignItems: "center", gap: 8, textDecoration: "none" }}>
+            <span style={{ width: 22, height: 22, background: ACCENT, borderRadius: 4, display: "inline-flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+                <path d="M2 6h4M6 6l2.5-2.5M6 6l2.5 2.5" stroke="#fff" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </span>
+            <span style={{ fontFamily: DISPLAY, fontSize: 18, fontWeight: 700, letterSpacing: "-0.03em", color: "#0D0D0B" }}>Svitch</span>
+          </a>
+
           <div className="r-nav-links" style={{ fontFamily: MONO, fontSize: 13, color: "#71716B" }}>
             <a href="#process" style={{ color: "#71716B" }}>Products</a>
             <a href="#demo"    style={{ color: "#71716B" }}>Docs</a>
             <a href="#code"    style={{ color: "#71716B" }}>Pricing</a>
             <a href="https://github.com/koushiknarendra/svitch" target="_blank" style={{ color: "#71716B" }}>GitHub</a>
           </div>
-          <a href="#demo" className="r-nav-cta" style={{ fontFamily: MONO, fontSize: 13, color: ACCENT }}>Request access&nbsp;→</a>
+
+          <a href="#demo" className="r-nav-cta" style={{ fontFamily: MONO, fontSize: 13, color: ACCENT, whiteSpace: "nowrap" }}>
+            <span className="r-cta-full">Request access</span>
+            <span className="r-cta-short">Get access</span>
+            &nbsp;→
+          </a>
         </div>
       </nav>
 
