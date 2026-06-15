@@ -419,11 +419,11 @@ export default function Home() {
                 OpenAI · Anthropic · Gemini · Llama<br />+ any OpenAI-compatible endpoint
               </p>
             </div>
-            <div style={{ position: "relative", background: "#F4F3F0", border: "1px solid #E8E8E4", borderRadius: 4 }}>
+            <div style={{ position: "relative", background: "#F4F3F0", border: "1px solid #E8E8E4", borderRadius: 4, minWidth: 0, overflow: "hidden" }}>
               <button onClick={copyCode} style={{ position: "absolute", top: 12, right: 12, fontFamily: MONO, fontSize: 11, color: "#71716B", background: "#FFFFFF", border: "1px solid #E8E8E4", borderRadius: 3, padding: "5px 10px", cursor: "pointer" }}>
                 {copied ? "copied" : "copy"}
               </button>
-              <pre style={{ margin: 0, padding: "24px 22px", overflow: "auto", fontFamily: CODE_FONT, fontSize: 13, lineHeight: 1.7, color: "#0D0D0B" }}>
+              <pre style={{ margin: 0, padding: "24px 22px", overflowX: "auto", WebkitOverflowScrolling: "touch" as const, fontFamily: CODE_FONT, fontSize: 13, lineHeight: 1.7, color: "#0D0D0B" }}>
                 <CodeBlock />
               </pre>
             </div>
