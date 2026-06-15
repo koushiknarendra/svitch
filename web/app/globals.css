@@ -25,3 +25,65 @@ a { text-decoration: none; color: inherit; }
 @media (prefers-color-scheme: dark) {
   body { background: #FAFAF8; color: #0D0D0B; }
 }
+
+/* ─── Responsive layout classes ─────────────────────────────────────────── */
+.r-nav-links   { display: flex; gap: 36px; }
+.r-nav-inner   { max-width: 1180px; margin: 0 auto; padding: 0 40px; height: 64px; display: flex; align-items: center; justify-content: space-between; }
+.r-outer       { max-width: 1180px; margin: 0 auto; padding: 0 40px; }
+.r-section     { max-width: 1180px; margin: 0 auto; padding: 88px 40px; }
+.r-section-sm  { max-width: 1180px; margin: 0 auto; padding: 84px 40px; }
+.r-logos       { max-width: 1180px; margin: 0 auto; padding: 28px 40px; }
+.r-products-hd { max-width: 1180px; margin: 0 auto; padding: 88px 40px 40px; }
+.r-product-row { max-width: 1180px; margin: 0 auto; padding: 40px; border-top: 1px solid #E8E8E4; }
+.r-product-last{ max-width: 1180px; margin: 0 auto; padding: 40px; border-top: 1px solid #E8E8E4; border-bottom: 1px solid #E8E8E4; }
+.r-wm-wrap     { max-width: 1180px; margin: 0 auto; padding: 0 40px; overflow: hidden; }
+
+.r-hero-grid   { display: grid; grid-template-columns: 55fr 45fr; gap: 56px; align-items: start; }
+.r-grid-3      { display: grid; grid-template-columns: repeat(3,1fr); gap: 48px; }
+.r-grid-demo   { display: grid; grid-template-columns: 38fr 62fr; gap: 56px; align-items: start; }
+.r-grid-code   { display: grid; grid-template-columns: 42fr 58fr; gap: 56px; align-items: center; }
+.r-grid-2      { display: grid; grid-template-columns: 1fr 1fr; gap: 56px; align-items: center; }
+.r-grid-stats  { display: grid; grid-template-columns: repeat(3,1fr); gap: 48px; }
+.r-grid-footer { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 32px; align-items: start; }
+
+.r-sticky      { position: sticky; top: 96px; }
+.r-text-right  { text-align: right; }
+.r-hero-h1     { font-size: 58px; line-height: 1.04; font-weight: 700; letter-spacing: -0.035em; margin: 0 0 28px; color: #0D0D0B; }
+.r-hero-p      { font-size: 17px; line-height: 1.65; color: #71716B; margin: 0 0 36px; max-width: 440px; }
+.r-h2-lg       { font-size: 38px; font-weight: 700; letter-spacing: -0.03em; line-height: 1.08; margin: 0 0 56px; color: #0D0D0B; max-width: 640px; }
+.r-h2-demo     { font-size: 32px; font-weight: 700; letter-spacing: -0.03em; line-height: 1.1; margin: 0 0 18px; }
+.r-h2-code     { font-size: 38px; font-weight: 700; letter-spacing: -0.03em; line-height: 1.08; margin: 0 0 20px; }
+.r-stat-num    { font-size: 56px; font-weight: 700; letter-spacing: -0.03em; line-height: 1; margin-bottom: 18px; }
+.r-logo-list   { display: flex; align-items: center; gap: 44px; flex-wrap: wrap; flex: 1; justify-content: space-between; }
+.r-nav-cta     { white-space: nowrap; }
+
+@media (max-width: 768px) {
+  .r-nav-links   { display: none; }
+  .r-nav-inner   { padding: 0 20px; }
+  .r-outer       { padding: 0 20px; }
+  .r-section     { padding: 52px 20px; }
+  .r-section-sm  { padding: 52px 20px; }
+  .r-logos       { padding: 20px; }
+  .r-products-hd { padding: 52px 20px 24px; }
+  .r-product-row { padding: 32px 20px; }
+  .r-product-last{ padding: 32px 20px; }
+  .r-wm-wrap     { padding: 0 20px; }
+
+  .r-hero-grid   { grid-template-columns: 1fr; gap: 32px; }
+  .r-grid-3      { grid-template-columns: 1fr; gap: 28px; }
+  .r-grid-demo   { grid-template-columns: 1fr; gap: 28px; }
+  .r-grid-code   { grid-template-columns: 1fr; gap: 28px; }
+  .r-grid-2      { grid-template-columns: 1fr; gap: 28px; }
+  .r-grid-stats  { grid-template-columns: 1fr; gap: 36px; }
+  .r-grid-footer { grid-template-columns: 1fr; gap: 20px; }
+
+  .r-sticky      { position: static; }
+  .r-text-right  { text-align: left; }
+  .r-hero-h1     { font-size: 36px; margin: 0 0 18px; }
+  .r-hero-p      { font-size: 15px; margin: 0 0 24px; max-width: 100%; }
+  .r-h2-lg       { font-size: 26px; margin: 0 0 36px; }
+  .r-h2-demo     { font-size: 24px; }
+  .r-h2-code     { font-size: 26px; margin: 0 0 16px; }
+  .r-stat-num    { font-size: 40px; }
+  .r-logo-list   { gap: 24px; justify-content: flex-start; }
+}
