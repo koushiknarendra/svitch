@@ -319,11 +319,11 @@ export default function Home() {
 
       {/* ── LOGO STRIP ── */}
       <section className="r-logos">
-        <div style={{ display: "flex", alignItems: "center", gap: 24, flexWrap: "wrap" }}>
+        <div className="r-logos-inner">
           <span style={{ fontFamily: MONO, fontSize: 11, letterSpacing: "0.1em", color: "#71716B", whiteSpace: "nowrap" }}>TRUSTED BY TEAMS AT</span>
           <div className="r-logo-list">
             {["Razorbank","Meridian","Kosh","Northwind","Tessellate","Anvaya","Settl"].map((name) => (
-              <span key={name} style={{ fontSize: 16, fontWeight: 700, letterSpacing: "-0.02em", color: "#B0B0A8" }}>{name}</span>
+              <span key={name} style={{ fontSize: 15, fontWeight: 700, letterSpacing: "-0.02em", color: "#B0B0A8" }}>{name}</span>
             ))}
           </div>
         </div>
