@@ -1,0 +1,83 @@
+version: "3.9"
+
+# Local development stack — uses a CPU-only mock LLM instead of a real GPU.
+# For production, run provisioner/provision.py on a Lambda Labs / RunPod GPU server.
+
+services:
+
+  # ── Svitch Inference Server ───────────────────────────────────────────────
+  # OpenAI-compatible proxy with PII Shield + Agent Tracer baked in.
+  # In prod, VLLM_BASE_URL points to the real vLLM container on the GPU server.
+  svitch-inference:
+    build:
+      context: ..
+      dockerfile: private-enclave/inference/Dockerfile
+    environment:
+      - VLLM_BASE_URL=http://mock-llm:8000
+      - DEFAULT_MODEL=llama-3.1-8b-instruct
+      - ENCLAVE_ID=svitch-dev-enclave
+      - PII_MODE=redact
+      - TRACER_ENABLED=true
+      - SVITCH_DB_PATH=/data/audit.db
+    volumes:
+      - svitch-audit:/data
+    ports:
+      - "8080:8080"
+    depends_on:
+      - mock-llm
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ── Mock LLM (dev only) ────────────────────────────────────────────────────
+  # A tiny FastAPI server that mimics the OpenAI chat completions API.
+  # Replace with a real vLLM container (or point VLLM_BASE_URL at a remote one).
+  mock-llm:
+    image: python:3.12-slim
+    command: >
+      sh -c "pip install -q fastapi uvicorn &&
+             python -c \"
+import json
+from fastapi import FastAPI
+from fastapi.responses import JSONResponse
+import uvicorn
+
+app = FastAPI()
+
+@app.get('/health')
+def health(): return {'status': 'ok'}
+
+@app.get('/v1/models')
+def models():
+    return {'object': 'list', 'data': [{'id': 'llama-3.1-8b-instruct', 'object': 'model'}]}
+
+@app.post('/v1/chat/completions')
+async def chat(request):
+    body = await request.json()
+    msg = body.get('messages', [{}])[-1].get('content', '')
+    return {
+        'id': 'mock-001',
+        'object': 'chat.completion',
+        'model': body.get('model', 'llama-3.1-8b-instruct'),
+        'choices': [{
+            'index': 0,
+            'message': {'role': 'assistant', 'content': f'[Mock LLM] Received: {msg[:80]}'},
+            'finish_reason': 'stop',
+        }],
+        'usage': {'prompt_tokens': 10, 'completion_tokens': 20, 'total_tokens': 30},
+    }
+
+uvicorn.run(app, host='0.0.0.0', port=8000)
+\""
+    ports:
+      - "8000:8000"
+    healthcheck:
+      test: ["CMD-SHELL", "python -c \"import urllib.request; urllib.request.urlopen('http://localhost:8000/health')\""]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+volumes:
+  svitch-audit:
