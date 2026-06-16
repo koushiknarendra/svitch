@@ -622,7 +622,7 @@ export default function Home() {
           <div className="r-grid-footer">
             <div>
               <div style={{ fontFamily: DISPLAY, fontSize: 20, fontWeight: 700, letterSpacing: "-0.03em", marginBottom: 10 }}>Svitch</div>
-              <div style={{ fontFamily: MONO, fontSize: 12, color: "#71716B" }}>Apache 2.0 · open source</div>
+              <div style={{ fontFamily: MONO, fontSize: 12, color: "#71716B" }}>Open-core · Shield &amp; Tracer are Apache 2.0</div>
             </div>
             <div style={{ display: "flex", gap: 28, fontFamily: MONO, fontSize: 13, color: "#71716B", justifyContent: "center", flexWrap: "wrap" }}>
               <a href="#process" style={{ color: "#71716B" }}>Products</a>

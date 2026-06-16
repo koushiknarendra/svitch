@@ -1,4 +1,4 @@
-import * as P from './patterns';
+import * as P from './patterns.js';
 
 export interface Entity {
   type: string;
@@ -144,7 +144,7 @@ export function redact(
 // Client wrappers
 // ---------------------------------------------------------------------------
 
-type AnyClient = Record<string, any>;
+type AnyClient = Record<string | symbol, any>;
 
 export function wrap(client: AnyClient, locale: Locale = 'all'): AnyClient {
   const name = client?.constructor?.name ?? '';
