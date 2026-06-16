@@ -318,16 +318,30 @@ export default function Home() {
       <div className="r-outer"><div style={{ borderTop: "1px solid #E8E8E4" }} /></div>
 
       {/* ── LOGO STRIP ── */}
-      <section className="r-logos">
-        <div className="r-logos-inner">
-          <span style={{ fontFamily: MONO, fontSize: 11, letterSpacing: "0.1em", color: "#71716B", whiteSpace: "nowrap" }}>TRUSTED BY TEAMS AT</span>
-          <div className="r-logo-list">
-            {["Razorbank","Meridian","Kosh","Northwind","Tessellate","Anvaya","Settl"].map((name) => (
-              <span key={name} style={{ fontSize: 15, fontWeight: 700, letterSpacing: "-0.02em", color: "#B0B0A8" }}>{name}</span>
-            ))}
-          </div>
-        </div>
-      </section>
+      {(() => {
+        const names = ["Razorbank","Meridian","Kosh","Northwind","Tessellate","Anvaya","Settl"];
+        // Duplicate for seamless loop
+        const items = [...names, ...names];
+        return (
+          <section style={{ borderBottom: "1px solid #E8E8E4", padding: "20px 0" }}>
+            <div style={{ fontFamily: MONO, fontSize: 10, letterSpacing: "0.12em", color: "#B0B0A8", textAlign: "center", marginBottom: 14 }}>
+              TRUSTED BY TEAMS AT
+            </div>
+            <div className="r-marquee-outer">
+              <div className="r-marquee-track">
+                {items.map((name, i) => (
+                  <span key={i} style={{ display: "inline-flex", alignItems: "center", gap: 0 }}>
+                    <span style={{ fontSize: 15, fontWeight: 700, letterSpacing: "-0.02em", color: "#B0B0A8", padding: "0 36px", whiteSpace: "nowrap" }}>
+                      {name}
+                    </span>
+                    <span style={{ width: 3, height: 3, borderRadius: "50%", background: "#D8D8D2", display: "inline-block", flexShrink: 0 }} />
+                  </span>
+                ))}
+              </div>
+            </div>
+          </section>
+        );
+      })()}
 
       {/* ── PROCESS ── */}
       <section id="process" style={{ background: "#FFFFFF", borderTop: "1px solid #E8E8E4", borderBottom: "1px solid #E8E8E4" }}>

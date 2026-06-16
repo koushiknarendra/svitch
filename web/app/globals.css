@@ -58,6 +58,34 @@ a { text-decoration: none; color: inherit; }
 .r-stat-num    { font-size: 56px; font-weight: 700; letter-spacing: -0.03em; line-height: 1; margin-bottom: 18px; }
 .r-logos-inner { display: flex; align-items: center; gap: 24px; flex-wrap: wrap; }
 .r-logo-list   { display: flex; align-items: center; gap: 44px; flex: 1; justify-content: space-between; }
+
+/* ── Marquee ── */
+@keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+.r-marquee-outer {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+}
+.r-marquee-outer::before,
+.r-marquee-outer::after {
+  content: '';
+  position: absolute;
+  top: 0; bottom: 0;
+  width: 80px;
+  z-index: 2;
+  pointer-events: none;
+}
+.r-marquee-outer::before { left: 0;  background: linear-gradient(to right, #FAFAF8, transparent); }
+.r-marquee-outer::after  { right: 0; background: linear-gradient(to left,  #FAFAF8, transparent); }
+
+.r-marquee-track {
+  display: flex;
+  align-items: center;
+  width: max-content;
+  animation: marquee 28s linear infinite;
+}
+.r-marquee-track:hover { animation-play-state: paused; }
 .r-nav-cta     { white-space: nowrap; }
 
 @media (max-width: 768px) {
