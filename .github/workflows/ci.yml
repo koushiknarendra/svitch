@@ -56,6 +56,17 @@ jobs:
       - run: python -m build
         working-directory: sdk/python
 
+  test-consent-ledger:
+    name: Consent Ledger tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Run consent ledger tests
+        run: python consent-ledger/tests/test_ledger.py
+
   test-compliance:
     name: Compliance Engine tests
     runs-on: ubuntu-latest
