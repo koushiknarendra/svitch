@@ -131,7 +131,7 @@ export default function ReportsPage() {
                   <label style={{ fontSize: 12, color: "#71716B", width: 96, flexShrink: 0 }}>{f.label}</label>
                   <input
                     type={f.type}
-                    value={(tel as Record<string, unknown>)[f.key] as string}
+                    value={(tel as unknown as Record<string, unknown>)[f.key] as string}
                     onChange={e => setTel(prev => ({ ...prev, [f.key]: f.type === "number" ? Number(e.target.value) : e.target.value }))}
                     style={{
                       flex: 1, border: "1px solid #E8E8E4", borderRadius: 6, padding: "5px 10px",
@@ -182,7 +182,7 @@ export default function ReportsPage() {
                   <label style={{ fontSize: 12, color: "#71716B", width: 96, flexShrink: 0 }}>{f.label}</label>
                   <input
                     type={f.type}
-                    value={(tel as Record<string, unknown>)[f.key] as string}
+                    value={(tel as unknown as Record<string, unknown>)[f.key] as string}
                     onChange={e => setTel(prev => ({ ...prev, [f.key]: f.type === "number" ? Number(e.target.value) : e.target.value }))}
                     style={{
                       flex: 1, border: "1px solid #E8E8E4", borderRadius: 6, padding: "5px 10px",
