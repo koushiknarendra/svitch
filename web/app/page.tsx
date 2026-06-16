@@ -268,9 +268,9 @@ export default function Home() {
             <a href="https://github.com/koushiknarendra/svitch" target="_blank" style={{ color: "#71716B" }}>GitHub</a>
           </div>
 
-          <a href="#demo" className="r-nav-cta" style={{ fontFamily: MONO, fontSize: 13, color: ACCENT, whiteSpace: "nowrap" }}>
-            <span className="r-cta-full">Request access</span>
-            <span className="r-cta-short">Get access</span>
+          <a href="/dashboard" className="r-nav-cta" style={{ fontFamily: MONO, fontSize: 13, color: ACCENT, whiteSpace: "nowrap" }}>
+            <span className="r-cta-full">Open Dashboard</span>
+            <span className="r-cta-short">Dashboard</span>
             &nbsp;→
           </a>
         </div>
