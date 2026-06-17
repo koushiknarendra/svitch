@@ -16,7 +16,7 @@ import sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, ROOT)
-os.environ.setdefault("SVITCH_CONSENT_DB", os.path.join(ROOT, "svitch_consent.db"))
+os.environ.setdefault("SVITCH_CONSENT_DB", "/tmp/svitch_consent.db")
 
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
