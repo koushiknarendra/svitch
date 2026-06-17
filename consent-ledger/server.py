@@ -138,6 +138,37 @@ def get_principal_consents(data_principal_id: str, active_only: bool = False):
     }
 
 
+@app.get("/consents")
+def list_recent_consents(limit: int = 50):
+    """List recent consent records across all principals (for dashboard)."""
+    L.init_db()
+    import sqlite3 as _sql
+    with L._conn() as c:
+        rows = c.execute(
+            "SELECT * FROM consent_records ORDER BY granted_at_ms DESC LIMIT ?", (limit,)
+        ).fetchall()
+    records = [L._row_to_record(r) for r in rows]
+    return {
+        "count": len(records),
+        "consents": [
+            {
+                "consent_id": r.consent_id,
+                "purpose": r.purpose,
+                "data_categories": r.data_categories,
+                "legal_basis": r.legal_basis,
+                "status": r.status,
+                "granted_at_ms": r.granted_at_ms,
+                "withdrawn_at_ms": r.withdrawn_at_ms,
+                "channel": r.channel,
+                "version": r.version,
+                "record_hash": r.record_hash,
+                "withdrawal_of": r.withdrawal_of,
+            }
+            for r in records
+        ],
+    }
+
+
 @app.get("/chain/verify")
 def verify_chain():
     valid, msg, count = L.verify_chain()

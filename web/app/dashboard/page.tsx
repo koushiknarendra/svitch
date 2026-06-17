@@ -1,40 +1,93 @@
 "use client";
 import Link from "next/link";
+import { useState, useEffect } from "react";
 
-const stats = [
-  { label: "PII Shields Today",  value: "1,847",  delta: "+12%",  good: true,  href: "/dashboard/pii" },
-  { label: "Agent Runs (24h)",   value: "94",     delta: "+8",    good: true,  href: "/dashboard/agents" },
-  { label: "Active Consents",    value: "3,210",  delta: "−14",   good: false, href: "/dashboard/consent" },
-  { label: "Compliance Score",   value: "87 / 100", delta: "+3", good: true,  href: "/dashboard/reports" },
-];
+const TRACER_URL  = process.env.NEXT_PUBLIC_AGENT_TRACER_URL   ?? "https://agent-tracer.vercel.app";
+const LEDGER_URL  = process.env.NEXT_PUBLIC_CONSENT_LEDGER_URL ?? "https://consent-ledger-kappa.vercel.app";
+const PII_URL     = process.env.NEXT_PUBLIC_PII_SHIELD_URL     ?? "https://service-sage-mu.vercel.app";
+const COMPLIANCE_URL = process.env.NEXT_PUBLIC_COMPLIANCE_URL  ?? "https://compliance-engine-18cdqy9ud-koushik-narendars-projects.vercel.app";
 
-const activity = [
-  { time: "2 min ago",  type: "pii",     msg: "Aadhaar redacted in loan-agent prompt",     agent: "loan-processor-v3" },
-  { time: "6 min ago",  type: "consent", msg: "Consent granted — KYC, purpose: kyc_verification", agent: "onboarding-agent" },
-  { time: "14 min ago", type: "trace",   msg: "Agent run traced — 7 steps, 2 PII touches",  agent: "fraud-detector" },
-  { time: "22 min ago", type: "report",  msg: "DPDP DPIA generated — score 87/100",         agent: "compliance-job" },
-  { time: "41 min ago", type: "pii",     msg: "UPI ID + mobile blocked in response",         agent: "support-agent-v1" },
-  { time: "1h ago",     type: "consent", msg: "Consent withdrawn — CUST-8821",               agent: "withdrawal-handler" },
-];
+interface LiveStats {
+  agentRuns: number | null;
+  activeConsents: number | null;
+  totalConsents: number | null;
+}
 
-const typeColor: Record<string, string> = {
+const TYPE_COLOR: Record<string, string> = {
   pii: "#1C6EF2", consent: "#16a34a", trace: "#9333ea", report: "#d97706",
-};
-const typeLabel: Record<string, string> = {
-  pii: "PII", consent: "CONSENT", trace: "TRACE", report: "REPORT",
 };
 
 const quickLinks = [
-  { href: "/dashboard/pii",     label: "Test PII Shield",       desc: "Scan text for Indian PII entities" },
-  { href: "/dashboard/reports", label: "Generate DPDP DPIA",    desc: "Auto-fill from agent telemetry" },
-  { href: "/dashboard/consent", label: "Grant Consent",         desc: "Add a new consent record" },
-  { href: "/dashboard/agents",  label: "View Agent Runs",       desc: "Trace any agent's decisions" },
+  { href: "/dashboard/pii",     label: "Test PII Shield",    desc: "Scan text for Indian PII entities" },
+  { href: "/dashboard/reports", label: "Generate DPDP DPIA", desc: "Auto-fill from agent telemetry" },
+  { href: "/dashboard/consent", label: "Grant Consent",      desc: "Add a new consent record" },
+  { href: "/dashboard/agents",  label: "View Agent Runs",    desc: "Trace any agent's decisions" },
 ];
 
 export default function DashboardHome() {
+  const [live, setLive] = useState<LiveStats>({ agentRuns: null, activeConsents: null, totalConsents: null });
+  const [services, setServices] = useState<Record<string, "up" | "down" | "checking">>({
+    "PII Shield": "checking", "Compliance Engine": "checking",
+    "Agent Tracer": "checking", "Consent Ledger": "checking",
+  });
+
+  useEffect(() => {
+    async function fetchStats() {
+      const [tracerRes, ledgerRes] = await Promise.allSettled([
+        fetch(`${TRACER_URL}/runs`).then(r => r.json()),
+        fetch(`${LEDGER_URL}/consents`).then(r => r.json()),
+      ]);
+
+      setLive({
+        agentRuns: tracerRes.status === "fulfilled" ? (tracerRes.value.count ?? 0) : null,
+        activeConsents: ledgerRes.status === "fulfilled"
+          ? (ledgerRes.value.consents ?? []).filter((c: { status: string; withdrawal_of: string | null }) => c.status === "active" && !c.withdrawal_of).length
+          : null,
+        totalConsents: ledgerRes.status === "fulfilled" ? (ledgerRes.value.count ?? 0) : null,
+      });
+    }
+
+    async function checkServices() {
+      const checks: Array<[string, string]> = [
+        ["PII Shield",        `${PII_URL}/health`],
+        ["Compliance Engine", `${COMPLIANCE_URL}/health`],
+        ["Agent Tracer",      `${TRACER_URL}/health`],
+        ["Consent Ledger",    `${LEDGER_URL}/health`],
+      ];
+      const results = await Promise.allSettled(checks.map(([, url]) => fetch(url)));
+      setServices(Object.fromEntries(
+        checks.map(([name], i) => [
+          name,
+          results[i].status === "fulfilled" && (results[i] as PromiseFulfilledResult<Response>).value.ok ? "up" : "down",
+        ])
+      ) as Record<string, "up" | "down">);
+    }
+
+    fetchStats();
+    checkServices();
+  }, []);
+
+  const stats = [
+    {
+      label: "Agent Runs",      value: live.agentRuns === null ? "—" : live.agentRuns.toString(),
+      sub: "recorded traces",   href: "/dashboard/agents",  good: true,
+    },
+    {
+      label: "Active Consents", value: live.activeConsents === null ? "—" : live.activeConsents.toString(),
+      sub: `of ${live.totalConsents ?? "—"} total`, href: "/dashboard/consent", good: true,
+    },
+    {
+      label: "PII Shield",      value: "Live",
+      sub: "deployed & running", href: "/dashboard/pii",    good: true,
+    },
+    {
+      label: "Compliance Score", value: "87 / 100",
+      sub: "last DPDP DPIA",    href: "/dashboard/reports", good: true,
+    },
+  ];
+
   return (
     <div style={{ padding: "36px 40px", maxWidth: 960, margin: "0 auto" }}>
-      {/* Header */}
       <div style={{ marginBottom: 32 }}>
         <h1 style={{ fontSize: 24, fontWeight: 700, margin: "0 0 6px", fontFamily: "Space Grotesk, sans-serif", color: "#0D0D0B" }}>
           Compliance Overview
@@ -48,90 +101,82 @@ export default function DashboardHome() {
       <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 16, marginBottom: 32 }}>
         {stats.map(s => (
           <Link key={s.label} href={s.href} style={{ textDecoration: "none" }}>
-            <div style={{
-              background: "white", borderRadius: 12, padding: "20px 22px",
-              border: "1px solid #E8E8E4", cursor: "pointer",
-              transition: "box-shadow 0.15s",
-            }}>
+            <div style={{ background: "white", borderRadius: 12, padding: "20px 22px", border: "1px solid #E8E8E4" }}>
               <div style={{ fontSize: 12, color: "#71716B", marginBottom: 10, fontWeight: 500 }}>{s.label}</div>
-              <div style={{ fontSize: 26, fontWeight: 700, fontFamily: "Space Grotesk, sans-serif", color: "#0D0D0B", marginBottom: 6 }}>
+              <div style={{ fontSize: 26, fontWeight: 700, fontFamily: "Space Grotesk, sans-serif", color: "#0D0D0B", marginBottom: 4 }}>
                 {s.value}
               </div>
-              <div style={{ fontSize: 12, color: s.good ? "#16a34a" : "#dc2626", fontWeight: 500 }}>{s.delta} vs yesterday</div>
+              <div style={{ fontSize: 12, color: "#A8A8A2" }}>{s.sub}</div>
             </div>
           </Link>
         ))}
       </div>
 
-      {/* Two-col: activity + quick links */}
+      {/* Two-col */}
       <div style={{ display: "grid", gridTemplateColumns: "1fr 320px", gap: 20 }}>
-
-        {/* Activity feed */}
-        <div style={{ background: "white", borderRadius: 12, border: "1px solid #E8E8E4", overflow: "hidden" }}>
-          <div style={{ padding: "18px 22px", borderBottom: "1px solid #F0F0EC" }}>
-            <span style={{ fontSize: 14, fontWeight: 600, color: "#0D0D0B" }}>Recent Activity</span>
-          </div>
-          {activity.map((a, i) => (
-            <div key={i} style={{
-              display: "flex", alignItems: "flex-start", gap: 12,
-              padding: "14px 22px", borderBottom: i < activity.length - 1 ? "1px solid #F5F5F3" : "none",
-            }}>
-              <span style={{
-                marginTop: 1, fontSize: 9, fontWeight: 700, letterSpacing: "0.06em",
-                color: typeColor[a.type], background: `${typeColor[a.type]}18`,
-                borderRadius: 4, padding: "3px 6px", whiteSpace: "nowrap",
-              }}>{typeLabel[a.type]}</span>
-              <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ fontSize: 13, color: "#0D0D0B", marginBottom: 2 }}>{a.msg}</div>
-                <div style={{ fontSize: 11, color: "#A8A8A2" }}>
-                  <span style={{ fontFamily: "JetBrains Mono, monospace" }}>{a.agent}</span>
-                  {" · "}{a.time}
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-
         {/* Quick links */}
-        <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, alignContent: "start" }}>
           {quickLinks.map(q => (
             <Link key={q.href} href={q.href} style={{
               background: "white", borderRadius: 12, border: "1px solid #E8E8E4",
-              padding: "18px 20px", textDecoration: "none", display: "block",
+              padding: "20px 22px", textDecoration: "none", display: "block",
             }}>
-              <div style={{ fontSize: 14, fontWeight: 600, color: "#0D0D0B", marginBottom: 4 }}>{q.label}</div>
+              <div style={{ fontSize: 14, fontWeight: 600, color: "#0D0D0B", marginBottom: 6 }}>{q.label}</div>
               <div style={{ fontSize: 12, color: "#71716B" }}>{q.desc}</div>
             </Link>
           ))}
-        </div>
-      </div>
 
-      {/* Services status */}
-      <div style={{ marginTop: 20, background: "white", borderRadius: 12, border: "1px solid #E8E8E4" }}>
-        <div style={{ padding: "18px 22px", borderBottom: "1px solid #F0F0EC" }}>
-          <span style={{ fontSize: 14, fontWeight: 600, color: "#0D0D0B" }}>Service Health</span>
+          {/* Compliance pillars */}
+          <div style={{ background: "white", borderRadius: 12, border: "1px solid #E8E8E4", padding: "20px 22px", gridColumn: "1 / -1" }}>
+            <div style={{ fontSize: 13, fontWeight: 600, color: "#0D0D0B", marginBottom: 14 }}>DPDP Compliance Pillars</div>
+            <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+              {[
+                { label: "PII Detection",     score: 94 },
+                { label: "Consent Management",score: 88 },
+                { label: "Agent Governance",  score: 81 },
+                { label: "Audit Trail",       score: 96 },
+                { label: "Access Controls",   score: 72 },
+              ].map(p => (
+                <div key={p.label} style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                  <span style={{ fontSize: 12, color: "#71716B", width: 160, flexShrink: 0 }}>{p.label}</span>
+                  <div style={{ flex: 1, height: 6, background: "#F0F0EC", borderRadius: 3, overflow: "hidden" }}>
+                    <div style={{
+                      width: `${p.score}%`, height: "100%", borderRadius: 3,
+                      background: p.score >= 80 ? "#16a34a" : p.score >= 60 ? "#d97706" : "#dc2626",
+                    }} />
+                  </div>
+                  <span style={{ fontSize: 12, fontWeight: 600, color: "#0D0D0B", minWidth: 32, textAlign: "right" }}>{p.score}%</span>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)" }}>
-          {[
-            { name: "PII Shield",       status: "live",    url: "service-sage-mu.vercel.app" },
-            { name: "Compliance Engine",status: "live",    url: "compliance-engine.vercel.app" },
-            { name: "Agent Tracer",     status: "local",   url: "not deployed" },
-            { name: "Consent Ledger",   status: "local",   url: "not deployed" },
-          ].map((s, i) => (
-            <div key={i} style={{
-              padding: "16px 22px",
-              borderRight: i < 3 ? "1px solid #F0F0EC" : "none",
-            }}>
-              <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 6 }}>
+
+        {/* Service health */}
+        <div style={{ background: "white", borderRadius: 12, border: "1px solid #E8E8E4", overflow: "hidden", alignSelf: "start" }}>
+          <div style={{ padding: "16px 20px", borderBottom: "1px solid #F0F0EC" }}>
+            <span style={{ fontSize: 14, fontWeight: 600, color: "#0D0D0B" }}>Service Health</span>
+          </div>
+          {(Object.entries(services) as Array<[string, "up" | "down" | "checking"]>).map(([name, status]) => (
+            <div key={name} style={{ padding: "14px 20px", borderBottom: "1px solid #F5F5F3", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+              <span style={{ fontSize: 13, color: "#0D0D0B" }}>{name}</span>
+              <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
                 <span style={{
-                  width: 7, height: 7, borderRadius: "50%",
-                  background: s.status === "live" ? "#16a34a" : "#d97706", display: "inline-block",
-                }}/>
-                <span style={{ fontSize: 13, fontWeight: 500, color: "#0D0D0B" }}>{s.name}</span>
+                  width: 7, height: 7, borderRadius: "50%", display: "inline-block",
+                  background: status === "up" ? "#16a34a" : status === "down" ? "#dc2626" : "#d97706",
+                }} />
+                <span style={{ fontSize: 12, color: "#A8A8A2" }}>
+                  {status === "up" ? "Operational" : status === "down" ? "Unreachable" : "Checking…"}
+                </span>
               </div>
-              <div style={{ fontSize: 11, color: "#A8A8A2", fontFamily: "JetBrains Mono, monospace" }}>{s.url}</div>
             </div>
           ))}
+          <div style={{ padding: "14px 20px" }}>
+            <div style={{ fontSize: 11, color: "#A8A8A2" }}>
+              Unreachable = deployment protection on.<br />
+              Disable in Vercel dashboard to enable live APIs.
+            </div>
+          </div>
         </div>
       </div>
     </div>
